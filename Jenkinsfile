@@ -1,22 +1,22 @@
-pipeline {
-    agent any
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git(
-                    url: 'https://github.com/Ankitkumarx/Non-Contact-Type-Respiratory-Analysis-System.git',
-                    credentialsId: 'github-creds'
-                )
+                checkout([$class: 'GitSCM',
+                          branches: [[name: '*/main']],
+                          userRemoteConfigs: [[
+                              url: 'https://github.com/Ankitkumarx/Non-Contact-Type-Respiratory-Analysis-System.git',
+                              credentialsId: 'github-creds'
+                          ]]
+                ])
             }
         }
 
         stage('Deploy to NGINX') {
             steps {
-                script {
-                    sh 'cp *.html /var/www/html/'
-                }
+                echo 'Deploying HTML to /var/www/html/'
+                sh 'sudo cp index.html /var/www/html/index.html'
             }
-        }
-    }
+        }
+    }
 }
