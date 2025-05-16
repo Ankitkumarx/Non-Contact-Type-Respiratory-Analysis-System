@@ -1,214 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-Contact Type Respiratory Analysis Systems</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-            color: #1a1a1a;
-        }
-        header {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-            padding: 25px 0;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        main {
-            padding: 30px;
-            max-width: 1400px;
-            margin: auto;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            margin-top: 30px;
-        }
-        .chart-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-        .chart-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-        canvas {
-            margin-top: 15px;
-            max-width: 100%;
-            height: 300px;
-        }
-        .dashboard-header {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        .dashboard-header h2 {
-            margin: 0;
-            color: #1e3c72;
-        }
-        .dashboard-header p {
-            color: #666;
-            margin: 10px 0 0;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function fetchData() {
-            document.getElementById('data-display').innerHTML = '<div id="loading-spinner"></div>';
-            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbK7BpKuq1b1FZsR_FO4zZw-GFcGPMFqJ1KbZ_kJHErC-kYbxCLMwbimIiM4kvPdTUum635pGfuWjp/pub?output=csv';
-            fetch(url)
-                .then(response => response.text())
-                .then(data => {
-                    const rows = data.split('\n');
-                    const labels = [];
-                    const airTemp = [];
-                    const humidity = [];
-                    const ambientTemp = [];
-                    const objectTemp = [];
-                    const soundLevel = [];
-                    const heartRate = [];
-                    const spo2 = [];
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Non-Contact Type Respiratory Analysis System .</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f0f2f5;
+      color: #333;
+    }
 
-                    rows.forEach((row, index) => {  // Fixed indentation
-                        const columns = row.split(',');  // Fixed indentation
-                        if (index > 0) {
-                            labels.push(columns[0]);
-                            airTemp.push(parseFloat(columns[1]));
-                            humidity.push(parseFloat(columns[2]));
-                            ambientTemp.push(parseFloat(columns[3]));
-                            objectTemp.push(parseFloat(columns[4]));
-                            soundLevel.push(parseFloat(columns[5]));
-                            heartRate.push(parseFloat(columns[6]));
-                            spo2.push(parseFloat(columns[8]));
-                        }
-                    });
+    header {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
 
-                    document.getElementById('data-display').innerHTML = '';
-                    renderChart('Air Temperature', 'airTempChart', labels, airTemp);
-                    renderChart('Humidity', 'humidityChart', labels, humidity);
-                    renderChart('Ambient Temperature', 'ambientTempChart', labels, ambientTemp);
-                    renderChart('Object Temperature', 'objectTempChart', labels, objectTemp);
-                    renderChart('Sound Level', 'soundLevelChart', labels, soundLevel);
-                    renderChart('Heart Rate', 'heartRateChart', labels, heartRate);
-                    renderChart('SPO2', 'spo2Chart', labels, spo2);
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        }
+    .data-board {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 1200px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
 
-        function renderChart(label, canvasId, labels, data) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels.slice(-50), // Show only last 50 data points
-                    datasets: [{
-                        label: label,
-                        data: data.slice(-50), // Show only last 50 data points
-                        borderColor: '#1e3c72',
-                        backgroundColor: 'rgba(30, 60, 114, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.1, // Reduced curve tension for better accuracy
-                        pointRadius: 1 // Smaller points for cleaner look
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 0 // Disable animation for real-time updates
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    family: "'Segoe UI', sans-serif",
-                                    size: 12
-                                }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: label,
-                            font: {
-                                family: "'Segoe UI', sans-serif",
-                                size: 16,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false, // Changed to better show value range
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            },
-                            ticks: {
-                                maxRotation: 45,
-                                minRotation: 45
-                            }
-                        }
-                    }
-                }
-            });
-        }
+    .data-item {
+      text-align: center;
+      flex: 1 1 180px;
+    }
 
-        window.onload = function() {
-            fetchData();
-            setInterval(fetchData, 2000); // Changed to 2 seconds for better performance
-        };
-    </script>
+    .data-item h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .data-item p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #1e3c72;
+    }
+
+    main {
+      padding: 0 30px 50px;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    canvas {
+      margin-top: 15px;
+      max-width: 100%;
+      height: 300px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Non-Contact Type Respiratory Analysis System</h1>
-    </header>
-    <main>
-        <div class="dashboard-header">
-            <h2>Real-time Respiratory Monitoring</h2>
-            <p>Live monitoring and visualization of respiratory parameters</p>
-        </div>
-        <div id="data-display">Loading data...</div>
-        <div class="grid-container">
-            <div class="chart-container">
-                <canvas id="airTempChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="humidityChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="ambientTempChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="objectTempChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="soundLevelChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="heartRateChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="spo2Chart"></canvas>
-            </div>
-        </div>
-    </main>
+  <header>
+    <h1>Non-Contact Type Respiratory Analysis System</h1>
+  </header>
+
+  <div class="data-board">
+    <div class="data-item"><h3>Object Temp (°C)</h3><p id="tempVal">--</p></div>
+    <div class="data-item"><h3>Heart Rate (bpm)</h3><p id="hrVal">--</p></div>
+    <div class="data-item"><h3>SPO2 (%)</h3><p id="spo2Val">--</p></div>
+    <div class="data-item"><h3>Chest Distance (cm)</h3><p id="chestVal">--</p></div>
+    <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
+  </div>
+
+  <main>
+    <div class="grid-container">
+      <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
+      <div class="chart-container"><canvas id="heartRateChart"></canvas></div>
+      <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
+      <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
+      <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
+    </div>
+  </main>
+
+  <script>
+    function fetchData() {
+      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbK7BpKuq1b1FZsR_FO4zZw-GFcGPMFqJ1KbZ_kJHErC-kYbxCLMwbimIiM4kvPdTUum635pGfuWjp/pub?output=csv';
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const rows = data.split('\n');
+          const labels = [];
+          const objectTemp = [];
+          const heartRate = [];
+          const spo2 = [];
+          const chestDistance = [];
+          const breathPerMin = [];
+
+          rows.forEach((row, index) => {
+            const cols = row.split(',');
+            if (index > 0 && cols.length >= 12) {
+              labels.push(cols[0]);
+              objectTemp.push(parseFloat(cols[4]));
+              heartRate.push(parseFloat(cols[6]));
+              spo2.push(parseFloat(cols[8]));
+              chestDistance.push(parseFloat(cols[10]));
+              breathPerMin.push(parseFloat(cols[11]));
+            }
+          });
+
+          // Update charts
+          renderChart('Object Temperature', 'objectTempChart', labels, objectTemp);
+          renderChart('Heart Rate', 'heartRateChart', labels, heartRate);
+          renderChart('SPO2', 'spo2Chart', labels, spo2);
+          renderChart('Chest Distance', 'chestDistanceChart', labels, chestDistance);
+          renderChart('Breaths Per Minute', 'breathPerMinChart', labels, breathPerMin);
+
+          // Update live values (digital board)
+          document.getElementById('tempVal').textContent = objectTemp.at(-1)?.toFixed(1) || '--';
+          document.getElementById('hrVal').textContent = heartRate.at(-1)?.toFixed(0) || '--';
+          document.getElementById('spo2Val').textContent = spo2.at(-1)?.toFixed(0) || '--';
+          document.getElementById('chestVal').textContent = chestDistance.at(-1)?.toFixed(1) || '--';
+          document.getElementById('bpmVal').textContent = breathPerMin.at(-1)?.toFixed(0) || '--';
+        })
+        .catch(err => console.error('Error loading data:', err));
+    }
+
+    function renderChart(label, canvasId, labels, data) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.slice(-50),
+          datasets: [{
+            label: label,
+            data: data.slice(-50),
+            borderColor: '#1e3c72',
+            backgroundColor: 'rgba(30, 60, 114, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: label }
+          }
+        }
+      });
+    }
+
+    window.onload = function () {
+      fetchData();
+      setInterval(fetchData, 2000); // Auto-refresh every 2 sec
+    };
+  </script>
 </body>
 </html>
