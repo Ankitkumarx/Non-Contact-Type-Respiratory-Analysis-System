@@ -1,3 +1,5 @@
+pipeline {
+    agent any
 
     stages {
         stage('Checkout Code') {
@@ -17,6 +19,6 @@
                 echo 'Deploying HTML to /var/www/html/'
                 sh 'sudo cp index.html /var/www/html/index.html'
             }
-        }
-    }
+        }
+    }
 }
