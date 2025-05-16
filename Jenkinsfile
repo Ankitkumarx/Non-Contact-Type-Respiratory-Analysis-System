@@ -17,7 +17,7 @@ pipeline {
         stage('Deploy to NGINX') {
             steps {
                 echo 'Deploying HTML to /var/www/html/'
-                sh 'sudo cp index.html /var/www/html/index.html'
+                sh 'sudo cp html/index.html /var/www/html/index.html'
             }
         }
     }
