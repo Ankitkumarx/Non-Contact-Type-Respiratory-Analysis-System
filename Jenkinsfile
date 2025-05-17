@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                echo 'Checking out code from GitHub...'
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
@@ -21,7 +22,15 @@ pipeline {
         stage('Deploy to NGINX') {
             steps {
                 echo 'Deploying HTML to /var/www/html/'
-                sh 'sudo cp html/index.html /var/www/html/index.html'
+                sh '''
+                    if [ -f html/index.html ]; then
+                        sudo cp html/index.html /var/www/html/index.html
+                        echo "✅ Deployment complete"
+                    else
+                        echo "❌ index.html not found"
+                        exit 1
+                    fi
+                '''
             }
         }
     }
