@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'jenkins'
     static_configs:
-      - targets: ['65.2.4.206:8080']
+      - targets: ['host.docker.internal:8080']
