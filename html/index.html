@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Non-Contact Respiratory Analysis</title>
+  <title>Non-Contact Respiratory Analysis </title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Disable Cache -->
-  <meta http-equiv="Cache-Control" content="no-store" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f9fafb;
       color: #111827;
+      line-height: 1.6;
     }
 
     header {
@@ -25,6 +25,11 @@
       text-align: center;
       color: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 600;
     }
 
     .data-board {
@@ -47,15 +52,20 @@
       transition: transform 0.2s ease;
     }
 
-    .data-item:hover { transform: translateY(-4px); }
-    .data-item h3 { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
-    .data-item p { font-size: 26px; font-weight: 600; color: #2563eb; }
+    .data-item:hover {
+      transform: translateY(-4px);
+    }
 
-    .timestamp {
-      text-align: center;
+    .data-item h3 {
       font-size: 14px;
       color: #6b7280;
-      margin-top: -20px;
+      margin-bottom: 8px;
+    }
+
+    .data-item p {
+      font-size: 26px;
+      font-weight: 600;
+      color: #2563eb;
     }
 
     main {
@@ -83,7 +93,6 @@
       height: 300px;
     }
   </style>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -99,8 +108,6 @@
     <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
   </div>
 
-  <div class="timestamp" id="lastUpdated">Last Updated: --</div>
-
   <main>
     <div class="grid-container">
       <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
@@ -112,13 +119,10 @@
   </main>
 
   <script>
-    // To store chart instances and destroy before re-rendering
-    const chartRefs = {};
-
     function fetchData() {
       const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbK7BpKuq1b1FZsR_FO4zZw-GFcGPMFqJ1KbZ_kJHErC-kYbxCLMwbimIiM4kvPdTUum635pGfuWjp/pub?output=csv';
       fetch(url)
-        .then(res => res.text())
+        .then(response => response.text())
         .then(data => {
           const rows = data.trim().split('\n');
           const labels = [], objectTemp = [], heartRate = [], spo2 = [], chestDistance = [], breathPerMin = [];
@@ -146,23 +150,18 @@
           document.getElementById('spo2Val').textContent = spo2.at(-1)?.toFixed(0) || '--';
           document.getElementById('chestVal').textContent = chestDistance.at(-1)?.toFixed(1) || '--';
           document.getElementById('bpmVal').textContent = breathPerMin.at(-1)?.toFixed(0) || '--';
-
-          document.getElementById('lastUpdated').textContent = 'Last Updated: ' + new Date().toLocaleTimeString();
         })
-        .catch(err => console.error('Fetch Error:', err));
+        .catch(err => console.error('Data fetch error:', err));
     }
 
     function renderChart(label, canvasId, labels, data) {
       const ctx = document.getElementById(canvasId).getContext('2d');
-      if (chartRefs[canvasId]) {
-        chartRefs[canvasId].destroy(); // destroy old chart
-      }
-      chartRefs[canvasId] = new Chart(ctx, {
+      new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels.slice(-50),
           datasets: [{
-            label,
+            label: label,
             data: data.slice(-50),
             borderColor: '#2563eb',
             backgroundColor: 'rgba(37, 99, 235, 0.1)',
