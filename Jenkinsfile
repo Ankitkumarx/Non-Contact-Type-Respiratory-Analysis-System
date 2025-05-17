@@ -1,15 +1,19 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
                 checkout([$class: 'GitSCM',
-                          branches: [[name: '*/main']],
-                          userRemoteConfigs: [[
-                              url: 'https://github.com/Ankitkumarx/Non-Contact-Type-Respiratory-Analysis-System.git',
-                              credentialsId: 'github-creds'
-                          ]]
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Ankitkumarx/Non-Contact-Type-Respiratory-Analysis-System.git',
+                        credentialsId: 'github-creds'
+                    ]]
                 ])
             }
         }
