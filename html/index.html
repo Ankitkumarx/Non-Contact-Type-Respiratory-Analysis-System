@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Non-Contact Respiratory Analysis </title>
+  <title>Non-Contact Respiratory Analysis</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- 🔥 Include html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -30,6 +33,28 @@
     header h1 {
       font-size: 28px;
       font-weight: 600;
+    }
+
+    .download-btn {
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .download-btn button {
+      padding: 10px 20px;
+      background-color: #2563eb;
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .download-btn button:hover {
+      background-color: #1e40af;
     }
 
     .data-board {
@@ -93,30 +118,37 @@
       height: 300px;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
     <h1> Non-Contact Type Respiratory Analysis Systems..</h1>
   </header>
 
-  <div class="data-board">
-    <div class="data-item"><h3>Object Temp (°C)</h3><p id="tempVal">--</p></div>
-    <div class="data-item"><h3>Heart Rate (bpm)</h3><p id="hrVal">--</p></div>
-    <div class="data-item"><h3>SPO2 (%)</h3><p id="spo2Val">--</p></div>
-    <div class="data-item"><h3>Chest Distance (cm)</h3><p id="chestVal">--</p></div>
-    <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
+  <!-- 🔥 Download Button -->
+  <div class="download-btn">
+    <button onclick="downloadPDF()">Download PDF Report</button>
   </div>
 
-  <main>
-    <div class="grid-container">
-      <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
-      <div class="chart-container"><canvas id="heartRateChart"></canvas></div>
-      <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
-      <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
-      <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
+  <!-- 🔥 Wrap everything you want to export inside this div -->
+  <div id="pdfContent">
+    <div class="data-board">
+      <div class="data-item"><h3>Object Temp (°C)</h3><p id="tempVal">--</p></div>
+      <div class="data-item"><h3>Heart Rate (bpm)</h3><p id="hrVal">--</p></div>
+      <div class="data-item"><h3>SPO2 (%)</h3><p id="spo2Val">--</p></div>
+      <div class="data-item"><h3>Chest Distance (cm)</h3><p id="chestVal">--</p></div>
+      <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
     </div>
-  </main>
+
+    <main>
+      <div class="grid-container">
+        <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
+        <div class="chart-container"><canvas id="heartRateChart"></canvas></div>
+        <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
+        <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
+        <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
+      </div>
+    </main>
+  </div>
 
   <script>
     function fetchData() {
@@ -184,6 +216,19 @@
           }
         }
       });
+    }
+
+    // 🔥 PDF Export Function
+    function downloadPDF() {
+      const element = document.getElementById('pdfContent');
+      const opt = {
+        margin:       1.5,
+        filename:     'respiratory-report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a3', orientation: 'Landscape' }
+      };
+      html2pdf().set(opt).from(element).save();
     }
 
     window.onload = () => {
