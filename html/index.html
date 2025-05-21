@@ -1,240 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Non-Contact Respiratory Analysis</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- 🔥 Include html2pdf.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Non-Contact Respiratory Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      color: #111827;
-      line-height: 1.6;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
 
-    header {
-      background-color: #1e3a8a;
-      padding: 30px 20px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            padding: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
 
-    header h1 {
-      font-size: 28px;
-      font-weight: 600;
-    }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .download-btn {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-    }
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
 
-    .download-btn button {
-      padding: 10px 20px;
-      background-color: #2563eb;
-      border: none;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
+        .user-controls {
+            display: flex;
+            gap: 1rem;
+        }
 
-    .download-btn button:hover {
-      background-color: #1e40af;
-    }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
 
-    .data-board {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin: 30px auto;
-      max-width: 1200px;
-      padding: 0 20px;
-    }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
 
-    .data-item {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      width: 180px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s ease;
-    }
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
 
-    .data-item:hover {
-      transform: translateY(-4px);
-    }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
 
-    .data-item h3 {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 8px;
-    }
+        .data-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem auto;
+            max-width: 1400px;
+            padding: 0 1.5rem;
+        }
 
-    .data-item p {
-      font-size: 26px;
-      font-weight: 600;
-      color: #2563eb;
-    }
+        .data-item {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
 
-    main {
-      padding: 0 20px 50px;
-      max-width: 1400px;
-      margin: auto;
-    }
+        .data-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-top: 20px;
-    }
+        .data-item h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
 
-    .chart-container {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-    }
+        .data-item p {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2563eb;
+        }
 
-    canvas {
-      max-width: 100%;
-      height: 300px;
-    }
-  </style>
+        main {
+            padding: 2rem 1.5rem;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .data-board {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1> Non-Contact Type Respiratory Analysis Systems..</h1>
-  </header>
+    <header>
+        <div class="header-content">
+            <h1>Non-Contact Respiratory Analysis System</h1>
+            <div class="user-controls">
+                <button class="btn btn-primary" onclick="downloadPDF()">Download Report</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
 
-  <!-- 🔥 Download Button -->
-  <div class="download-btn">
-    <button onclick="downloadPDF()">Download PDF Report</button>
-  </div>
+    <div id="pdfContent">
+        <div class="data-board">
+            <div class="data-item">
+                <h3>Object Temperature</h3>
+                <p id="tempVal">--°C</p>
+            </div>
+            <div class="data-item">
+                <h3>Heart Rate</h3>
+                <p id="hrVal">-- bpm</p>
+            </div>
+            <div class="data-item">
+                <h3>SPO2</h3>
+                <p id="spo2Val">--%</p>
+            </div>
+            <div class="data-item">
+                <h3>Chest Distance</h3>
+                <p id="chestVal">-- cm</p>
+            </div>
+            <div class="data-item">
+                <h3>Respiratory Rate</h3>
+                <p id="bpmVal">-- /min</p>
+            </div>
+        </div>
 
-  <!-- 🔥 Wrap everything you want to export inside this div -->
-  <div id="pdfContent">
-    <div class="data-board">
-      <div class="data-item"><h3>Object Temp (°C)</h3><p id="tempVal">--</p></div>
-      <div class="data-item"><h3>Heart Rate (bpm)</h3><p id="hrVal">--</p></div>
-      <div class="data-item"><h3>SPO2 (%)</h3><p id="spo2Val">--</p></div>
-      <div class="data-item"><h3>Chest Distance (cm)</h3><p id="chestVal">--</p></div>
-      <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
+        <main>
+            <div class="grid-container">
+                <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
+                <div class="chart-container"><canvas id="heartRateChart"></canvas></div>
+                <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
+                <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
+                <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
+            </div>
+        </main>
     </div>
 
-    <main>
-      <div class="grid-container">
-        <div class="chart-container"><canvas id="objectTempChart"></canvas></div>
-        <div class="chart-container"><canvas id="heartRateChart"></canvas></div>
-        <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
-        <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
-        <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
-      </div>
-    </main>
-  </div>
+    <script>
+        function fetchData() {
+            const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbK7BpKuq1b1FZsR_FO4zZw-GFcGPMFqJ1KbZ_kJHErC-kYbxCLMwbimIiM4kvPdTUum635pGfuWjp/pub?output=csv';
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.trim().split('\n');
+                    const labels = [], objectTemp = [], heartRate = [], spo2 = [], chestDistance = [], breathPerMin = [];
 
-  <script>
-    function fetchData() {
-      const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbK7BpKuq1b1FZsR_FO4zZw-GFcGPMFqJ1KbZ_kJHErC-kYbxCLMwbimIiM4kvPdTUum635pGfuWjp/pub?output=csv';
-      fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          const rows = data.trim().split('\n');
-          const labels = [], objectTemp = [], heartRate = [], spo2 = [], chestDistance = [], breathPerMin = [];
+                    rows.forEach((row, i) => {
+                        const cols = row.split(',');
+                        if (i > 0 && cols.length >= 12) {
+                            labels.push(cols[0]);
+                            objectTemp.push(parseFloat(cols[4]));
+                            heartRate.push(parseFloat(cols[6]));
+                            spo2.push(parseFloat(cols[8]));
+                            chestDistance.push(parseFloat(cols[10]));
+                            breathPerMin.push(parseFloat(cols[11]));
+                        }
+                    });
 
-          rows.forEach((row, i) => {
-            const cols = row.split(',');
-            if (i > 0 && cols.length >= 12) {
-              labels.push(cols[0]);
-              objectTemp.push(parseFloat(cols[4]));
-              heartRate.push(parseFloat(cols[6]));
-              spo2.push(parseFloat(cols[8]));
-              chestDistance.push(parseFloat(cols[10]));
-              breathPerMin.push(parseFloat(cols[11]));
-            }
-          });
+                    renderChart('Object Temperature', 'objectTempChart', labels, objectTemp);
+                    renderChart('Heart Rate', 'heartRateChart', labels, heartRate);
+                    renderChart('SPO2', 'spo2Chart', labels, spo2);
+                    renderChart('Chest Distance', 'chestDistanceChart', labels, chestDistance);
+                    renderChart('Breaths Per Minute', 'breathPerMinChart', labels, breathPerMin);
 
-          renderChart('Object Temperature', 'objectTempChart', labels, objectTemp);
-          renderChart('Heart Rate', 'heartRateChart', labels, heartRate);
-          renderChart('SPO2', 'spo2Chart', labels, spo2);
-          renderChart('Chest Distance', 'chestDistanceChart', labels, chestDistance);
-          renderChart('Breaths Per Minute', 'breathPerMinChart', labels, breathPerMin);
-
-          document.getElementById('tempVal').textContent = objectTemp.at(-1)?.toFixed(1) || '--';
-          document.getElementById('hrVal').textContent = heartRate.at(-1)?.toFixed(0) || '--';
-          document.getElementById('spo2Val').textContent = spo2.at(-1)?.toFixed(0) || '--';
-          document.getElementById('chestVal').textContent = chestDistance.at(-1)?.toFixed(1) || '--';
-          document.getElementById('bpmVal').textContent = breathPerMin.at(-1)?.toFixed(0) || '--';
-        })
-        .catch(err => console.error('Data fetch error:', err));
-    }
-
-    function renderChart(label, canvasId, labels, data) {
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels.slice(-50),
-          datasets: [{
-            label: label,
-            data: data.slice(-50),
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          animation: false,
-          plugins: {
-            legend: { display: false },
-            title: { display: true, text: label, font: { size: 16 } }
-          },
-          scales: {
-            x: { ticks: { color: '#6b7280' } },
-            y: { ticks: { color: '#6b7280' } }
-          }
+                    document.getElementById('tempVal').textContent = objectTemp.at(-1)?.toFixed(1) || '--';
+                    document.getElementById('hrVal').textContent = heartRate.at(-1)?.toFixed(0) || '--';
+                    document.getElementById('spo2Val').textContent = spo2.at(-1)?.toFixed(0) || '--';
+                    document.getElementById('chestVal').textContent = chestDistance.at(-1)?.toFixed(1) || '--';
+                    document.getElementById('bpmVal').textContent = breathPerMin.at(-1)?.toFixed(0) || '--';
+                })
+                .catch(err => console.error('Data fetch error:', err));
         }
-      });
-    }
 
-    // 🔥 PDF Export Function
-    function downloadPDF() {
-      const element = document.getElementById('pdfContent');
-      const opt = {
-        margin:       1.5,
-        filename:     'respiratory-report.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'a3', orientation: 'Landscape' }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
+        function renderChart(label, canvasId, labels, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.slice(-50),
+                    datasets: [{
+                        label: label,
+                        data: data.slice(-50),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: label, font: { size: 16 } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#6b7280' } },
+                        y: { ticks: { color: '#6b7280' } }
+                    }
+                }
+            });
+        }
 
-    window.onload = () => {
-      fetchData();
-      setInterval(fetchData, 1000);
-    };
-  </script>
+        // 🔥 PDF Export Function
+        function downloadPDF() {
+            const element = document.getElementById('pdfContent');
+            const opt = {
+                margin:       1.5,
+                filename:     'respiratory-report.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'Landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function logout() {
+            window.location.href = 'login.html';
+        }
+
+        // Initialize the dashboard
+        fetchData();
+        // Update data every 5 seconds
+        setInterval(fetchData, 5000);
+    </script>
 </body>
 </html>
