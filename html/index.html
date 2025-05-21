@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Non-Contact Respiratory Analysis</title>
+  <title>Non-Contact Respiratory Analysis </title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
@@ -106,7 +106,6 @@
     <div class="data-item"><h3>SPO2 (%)</h3><p id="spo2Val">--</p></div>
     <div class="data-item"><h3>Chest Distance (cm)</h3><p id="chestVal">--</p></div>
     <div class="data-item"><h3>Breaths/Min</h3><p id="bpmVal">--</p></div>
-    <div class="data-item"><h3>Ultrasonic (cm)</h3><p id="ultrasonicVal">--</p></div>
   </div>
 
   <main>
@@ -116,7 +115,6 @@
       <div class="chart-container"><canvas id="spo2Chart"></canvas></div>
       <div class="chart-container"><canvas id="chestDistanceChart"></canvas></div>
       <div class="chart-container"><canvas id="breathPerMinChart"></canvas></div>
-      <div class="chart-container"><canvas id="ultrasonicChart"></canvas></div>
     </div>
   </main>
 
@@ -127,18 +125,17 @@
         .then(response => response.text())
         .then(data => {
           const rows = data.trim().split('\n');
-          const labels = [], objectTemp = [], heartRate = [], spo2 = [], chestDistance = [], breathPerMin = [], ultrasonic = [];
+          const labels = [], objectTemp = [], heartRate = [], spo2 = [], chestDistance = [], breathPerMin = [];
 
           rows.forEach((row, i) => {
             const cols = row.split(',');
-            if (i > 0 && cols.length >= 13) {
+            if (i > 0 && cols.length >= 12) {
               labels.push(cols[0]);
               objectTemp.push(parseFloat(cols[4]));
               heartRate.push(parseFloat(cols[6]));
               spo2.push(parseFloat(cols[8]));
               chestDistance.push(parseFloat(cols[10]));
               breathPerMin.push(parseFloat(cols[11]));
-              ultrasonic.push(parseFloat(cols[12])); // New column for Ultrasonic
             }
           });
 
@@ -147,14 +144,12 @@
           renderChart('SPO2', 'spo2Chart', labels, spo2);
           renderChart('Chest Distance', 'chestDistanceChart', labels, chestDistance);
           renderChart('Breaths Per Minute', 'breathPerMinChart', labels, breathPerMin);
-          renderChart('Ultrasonic Distance', 'ultrasonicChart', labels, ultrasonic);
 
           document.getElementById('tempVal').textContent = objectTemp.at(-1)?.toFixed(1) || '--';
           document.getElementById('hrVal').textContent = heartRate.at(-1)?.toFixed(0) || '--';
           document.getElementById('spo2Val').textContent = spo2.at(-1)?.toFixed(0) || '--';
           document.getElementById('chestVal').textContent = chestDistance.at(-1)?.toFixed(1) || '--';
           document.getElementById('bpmVal').textContent = breathPerMin.at(-1)?.toFixed(0) || '--';
-          document.getElementById('ultrasonicVal').textContent = ultrasonic.at(-1)?.toFixed(1) || '--';
         })
         .catch(err => console.error('Data fetch error:', err));
     }
@@ -193,7 +188,7 @@
 
     window.onload = () => {
       fetchData();
-      setInterval(fetchData, 1000); // Fetch every second
+      setInterval(fetchData, 1000);
     };
   </script>
 </body>
